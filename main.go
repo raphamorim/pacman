@@ -20,7 +20,7 @@ const (
 	pacman      = '❤'
 	ghost       = '⚉'
 	dot         = '·'
-	wall        = '▓'
+	wall        = '█'
 	powerPellet = '●'
 	emptySpace  = ' '
 
@@ -69,10 +69,10 @@ type Model struct {
 
 var (
 	// Styles
-	pacmanStyle          = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFFF00"))            // Yellow
-	ghostStyle           = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF0000"))            // Red
+	pacmanStyle          = lipgloss.NewStyle().Foreground(lipgloss.Color("#ffff00"))            // Yellow
+	ghostStyle           = lipgloss.NewStyle().Foreground(lipgloss.Color("#d7005f"))            // Red
 	frightenedGhostStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#0000FF"))            // Blue
-	wallStyle            = lipgloss.NewStyle().Foreground(lipgloss.Color("#0000FF"))            // Blue
+	wallStyle            = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff00ff"))            // Fushia
 	dotStyle             = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFFFFF"))            // White
 	powerPelletStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFFFFF"))            // White
 	scoreStyle           = lipgloss.NewStyle().Foreground(lipgloss.Color("#00FF00"))            // Green
@@ -342,7 +342,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
 	s := ""
-	s += "\n(◕‿◕) Use Rio terminal with retro arch shaders for a better experience!\n\n"
 
 	// Game area
 	for y := 0; y < m.height; y++ {
@@ -386,7 +385,12 @@ func (m Model) View() string {
 	}
 
 	// Game info
-	s += scoreStyle.Render(fmt.Sprintf("\nScore: %d  Lives: %d  Level: %d\n", m.score, m.lives, m.level))
+	scoreBar := lipgloss.NewStyle().Background(lipgloss.Color("#000000")).Foreground(lipgloss.Color("#ff00af")).Bold(true)
+	s += scoreBar.Render(fmt.Sprintf("\nScore: %d  Lives: %d  Level: %d\n", m.score, m.lives, m.level))
+
+	bottomBar := lipgloss.NewStyle().Background(lipgloss.Color("#afffff")).Foreground(lipgloss.Color("#ff00af"))
+
+	s += "\n"
 
 	// Game state messages
 	if m.gameState == won {
@@ -394,10 +398,13 @@ func (m Model) View() string {
 	} else if m.gameState == lost {
 		s += gameOverStyle.Render("\nGAME OVER! Press 'r' to play again or 'q' to quit.\n")
 	} else if m.gameState == paused {
-		s += "Game Paused. Press 'p' to continue.\n"
+		s += bottomBar.Render("Game Paused. Press 'p' to continue.\n")
 	} else {
-		s += "\nControls: arrow keys to move, 'p' to pause, 'q' to quit, 'r' to restart"
+		s += bottomBar.Render("Controls: arrow keys to move, 'p' to pause, 'q' to quit, 'r' to restart")
 	}
+
+	s += "\n"
+	s += bottomBar.Render("(◕‿◕) Use Rio terminal with retro arch shaders for a better experience!")
 
 	return s
 }
